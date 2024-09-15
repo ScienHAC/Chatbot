@@ -1,14 +1,12 @@
+from dotenv import load_dotenv
 import pyttsx3
 import speech_recognition as sr
 import google.generativeai as genai
-from dotenv import load_dotenv
 import os
 # import pyttsx3
 
-load_dotenv()
 # Initialize the speech engine
 engine = pyttsx3.init()
-api_key = os.getenv("GOOGLE_API_KEY")
 
 
 def speak(text):
@@ -28,13 +26,14 @@ def listen():
         try:
             # Recognize speech using Google Web Speech API
             text = recognizer.recognize_google(audio)
+            load_dotenv()
+            api_key = os.getenv("GOOGLE_API_KEY")
             print(f"You said: {text}")
-            z = "Remove any special characters and stars from the text and try to answer short accordingly to the question. and try only answer the question not explain each. avoid to read '*' and answer in hindi"
-            "AIzaSyDhFRxIi6RXM-54EZh7TIEvAtgdZ8UiNs4"
-            genai.configure(api_key)
+            genai.configure(api_key=api_key)
             model = genai.GenerativeModel("gemini-1.5-flash")
             response = model.generate_content(
-                f"{text}? avoid read this stars '*' also try to answer in hindi")
+                f"{text}? avoid read this stars '*' also try to answer in hindi but written in english")
+            # response.text = response.text.replace("*", "")
             return response.text, text
         except sr.UnknownValueError:
             # If speech is unintelligible
@@ -61,9 +60,7 @@ def main():
                 speak("Goodbye!")
                 break
             else:
-                def run():
-                    speak(command[0])
-                run()
+                speak(command[0])
 
 
 if __name__ == "__main__":
