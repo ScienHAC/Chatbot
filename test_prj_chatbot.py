@@ -10,15 +10,15 @@ load_dotenv()
 engine = pyttsx3.init()
 api_key = os.getenv("GOOGLE_API_KEY")
 
-"""
+
 def speak(text):
-    \"""This function takes text as input and speaks it.\"""
+    """This function takes text as input and speaks it."""
     engine.say(text)
     engine.runAndWait()
 
 
 def listen():
-    \"""This function listens to the microphone and returns recognized speech as text.\"""
+    """This function listens to the microphone and returns recognized speech as text."""
     recognizer = sr.Recognizer()
     with sr.Microphone() as source:
         print("Listening...")
@@ -49,7 +49,7 @@ def listen():
 
 
 def main():
-    \"""Main function to run the voice assistant.\"""
+    """Main function to run the voice assistant."""
     speak("Hello, how can I help you?")
     while True:
         command = listen()  # Listen for the user's command
@@ -68,4 +68,3 @@ def main():
 
 if __name__ == "__main__":
     main()
-"""
