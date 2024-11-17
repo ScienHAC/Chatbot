@@ -6,6 +6,8 @@ import os
 import sounddevice as sd
 import numpy as np
 from scipy.io import wavfile
+import webbrowser
+import subprocess
 
 engine = pyttsx3.init()
 
@@ -33,28 +35,33 @@ def listen():
         audio = recognizer.record(source)
         try:
             text = recognizer.recognize_google(audio)
+
+            # Sanitize input by removing special characters
+            sanitized_text = ''.join(
+                char for char in text if char.isalnum() or char.isspace())
+
             load_dotenv()
             api_key = os.getenv("GOOGLE_API_KEY")
-            print(f"You said: {text}")
+            print(f"You said: {sanitized_text}")
+
             genai.configure(api_key=api_key)
             model = genai.GenerativeModel("gemini-1.5-pro-002")
 
+            # Refined prompt for shorter, conversational response
             response = model.generate_content(
-                f"Answer in English and Hindi Both: {text}")
+                f"Answer briefly and naturally as if in a chatbot conversation: {sanitized_text}")
 
             if response and response.text:
-                return response.text, text
+                return response.text.strip(), sanitized_text
             else:
                 print("No response received from the model.")
                 speak("Sorry, I didn't receive any response.")
                 return None
         except sr.UnknownValueError:
-            # If speech is unintelligible
             print("Sorry, I didn't understand that.")
             speak("Sorry, I didn't understand that.")
             return None
         except sr.RequestError:
-            # If there's a request error with the speech recognition service
             print("Sorry, the speech recognition service is not available.")
             speak("Sorry, the speech recognition service is not available.")
             return None
@@ -72,6 +79,19 @@ def main():
             elif "stop" in command[1].lower():
                 speak("Goodbye!")
                 break
+            elif "open youtube" in command[1].lower():
+                speak("Opening YouTube.")
+                webbrowser.open("https://www.youtube.com")
+                break
+            elif "open chrome" in command[1].lower():
+                speak("Opening Chrome.")
+                try:
+                    # Replace the path with the correct path to Chrome on your system
+                    subprocess.Popen(
+                        [r"C:\Program Files\Google\Chrome\Application\chrome.exe"])
+                    break
+                except FileNotFoundError:
+                    speak("Chrome is not found on your system.")
             else:
                 speak(command[0])
 
